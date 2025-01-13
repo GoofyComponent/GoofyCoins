@@ -1,0 +1,99 @@
+services:
+    laravel:
+        container_name: "laravel-app"
+        user: www-data #Use www-data user for production usage
+        build:
+            context: ./docker/php
+            dockerfile: Dockerfile
+        environment:
+            IGNITION_LOCAL_SITES_PATH: "${PWD:-/var/www/html}"
+        volumes:
+            - "./Laravel/:/var/www/html"
+        ports:
+          - "8080:8080"
+        networks:
+            - sail
+        depends_on:
+            - mariadb
+            - redis
+    nginx-server:
+        image: jkaninda/nginx-fpm:alpine
+        container_name: nginx-server
+        # restart: unless-stopped
+        ports:
+            - 80:80
+        volumes:
+            #Project root
+            - ./Laravel/:/var/www/html
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        environment:
+            - DOCUMENT_ROOT=/var/www/html/public
+            - CLIENT_MAX_BODY_SIZE=20M
+            - PHP_FPM_HOST=laravel:9000
+        networks:
+            - sail
+        depends_on:
+            - laravel
+    mariadb:
+        image: "mariadb:10"
+        ports:
+            - "${FORWARD_DB_PORT:-3306}:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: "${DB_PASSWORD:-password}"
+            MYSQL_ROOT_HOST: "%"
+            MYSQL_DATABASE: "${DB_DATABASE:-app_database}"
+            MYSQL_USER: "${DB_USERNAME:-sail}"
+            MYSQL_PASSWORD: "${DB_PASSWORD:-password}"
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        volumes:
+            - "sail-mariadb:/var/lib/mysql"
+       
+        networks:
+            - sail
+        healthcheck:
+            test:
+                - CMD
+                - mysqladmin
+                - ping
+                - "-p${DB_PASSWORD:-password}"
+            retries: 3
+            timeout: 5s
+    react:
+        container_name: "react-app"
+        build:
+            context: ./docker/js
+            dockerfile: Dockerfile
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./React/:/app
+        depends_on:
+            - mariadb
+        networks:
+            - sail
+    redis:
+        container_name: "redis"
+        image: "redis:alpine"
+        ports:
+            - "${FORWARD_REDIS_PORT:-6379}:6379"
+        volumes:
+            - "sail-redis:/data"
+        networks:
+            - sail
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - ping
+            retries: 3
+            timeout: 5s   
+networks:
+    sail:
+        driver: bridge
+
+volumes:
+    sail-mariadb:
+        driver: local
+    sail-redis:
+        driver: local
+    
