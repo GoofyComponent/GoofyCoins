@@ -64,7 +64,7 @@ services:
             context: ./docker/js
             dockerfile: Dockerfile
         ports:
-            - "5173:5173"
+            - "3000:3000"
         volumes:
             - ./React/:/app
         depends_on:

@@ -37,6 +37,9 @@ if [ -f /var/www/html/composer.json ]; then
     info "Composer file found, installing dependencies..."
     cd /var/www/html
     composer install --no-interaction --no-progress --no-suggest
+    composer require predis/predis
+    composer require laravel/horizon  
+    php artisan horizon:install
     info "Composer dependencies installed"
 else
     info "Composer file not found"
@@ -90,16 +93,6 @@ if [ -f /var/www/html/artisan ]; then
     user=$USER_NAME
     redirect_stderr=true
     stdout_logfile=/var/www/html/storage/logs/laravel_horizon.log
-
-    [program:Laravel-reverb]
-    process_name=%(program_name)s_%(process_num)02d
-    command=php /var/www/html/artisan reverb:start --verbose --no-interaction --host=0.0.0.0 --port=8080
-    autostart=true
-    autorestart=true
-    numprocs=1
-    user=$USER_NAME
-    redirect_stderr=true
-    stdout_logfile=/var/www/html/storage/logs/laravel_reverb.log
 
 EOF
     info "Laravel supervisor config created"
