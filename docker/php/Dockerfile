@@ -8,6 +8,7 @@ ARG GROUP_ID=1000
 ARG USER_ID=1000
 ENV USER_NAME=www-data
 ARG GROUP_NAME=www-data
+ENV MAKEFLAGS=" -j 4"
 
 # France timezone
 RUN ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
@@ -48,16 +49,16 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install  zip mbstring exif pcntl bcmath -j$(nproc) gd intl
 
 # Install Redis and enable it
-RUN pecl install redis  && docker-php-ext-enable redis
+# RUN pecl install redis && docker-php-ext-enable redis
+RUN pecl install --onlyreqdeps --force redis \
+&& rm -rf /tmp/pear \
+&& docker-php-ext-enable redis
 
-# Install the php memcached extension
-RUN pecl install memcached && docker-php-ext-enable memcached
+# # Install the php memcached extension
+# RUN pecl install memcached && docker-php-ext-enable memcached
 
 # Install the PHP pdo_mysql extention
 RUN docker-php-ext-install pdo_mysql
-
-# Install the PHP pdo_pgsql extention
-RUN docker-php-ext-install pdo_pgsql
 
 # Install PHP Opcache extention
 RUN docker-php-ext-install opcache
@@ -71,13 +72,8 @@ WORKDIR $WORKDIR
 RUN rm -Rf /var/www/* && \
 mkdir -p /var/www/html
 
-# Installation des dépendances et nettoyage des caches en une seule étape
-RUN apt-get update --fix-missing && \
-    apt-get -y upgrade --fix-missing
-
-
 # install shivammathur/extensions/pcov
-RUN pecl install pcov && docker-php-ext-enable pcov
+# RUN pecl install pcov && docker-php-ext-enable pcov
 
 ADD index.php $WORKDIR/index.php
 ADD php.ini $PHP_INI_DIR/conf.d/
