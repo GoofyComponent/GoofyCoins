@@ -1,4 +1,4 @@
-.PHONY: up down exec
+.PHONY: up down exec pint
 
 up:
 	docker-compose up -d
@@ -8,3 +8,6 @@ down:
 
 exec:
 	docker-compose exec laravel bash
+
+pint:
+	docker-compose exec laravel ./vendor/bin/pint
