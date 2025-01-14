@@ -4,6 +4,7 @@ const API = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL || "http://localhost/api",
   headers: {
     "accept": "application/json",
+    "Content-Type": "application/json",
   },
   withCredentials: true,
   withXSRFToken: true,

@@ -32,7 +32,7 @@ class AuthenticatedSessionController extends Controller
 
     public function destroy(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $request->user()->tokens()->delete();
 
         return response()->json(['status' => 'Logged out']);
     }
