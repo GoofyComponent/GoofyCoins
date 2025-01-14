@@ -25,7 +25,8 @@ const Login = () => {
   };
 
   if (user) {
-    return <Navigate to="/dashboard" />;
+    // return <Navigate to="/dashboard" />;
+    console.log("user", user);
   }
 
   return (
