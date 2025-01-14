@@ -1,4 +1,4 @@
-.PHONY: up down exec pint install-back install-front install fresh clear
+.PHONY: up down exec pint install-back install-front install fresh clear test
 
 up:
 	docker-compose up -d
@@ -25,3 +25,6 @@ install: install-back install-front
 
 clear: 
 	docker-compose exec laravel php artisan config:clear
+
+test:
+	docker-compose exec laravel ./vendor/bin/phpunit
