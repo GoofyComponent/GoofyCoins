@@ -87,6 +87,20 @@ services:
                 - ping
             retries: 3
             timeout: 5s   
+    mailpit:
+        image: axllent/mailpit
+        volumes:
+            - mailpit:/data
+        networks:
+            - sail
+        ports:
+            - 8025:8025
+            - 1025:1025
+        environment:
+            MP_MAX_MESSAGES: 5000
+            MP_DATA_FILE: /data/mailpit.db
+            MP_SMTP_AUTH_ACCEPT_ANY: 1
+            MP_SMTP_AUTH_ALLOW_INSECURE: 1
 networks:
     sail:
         driver: bridge
@@ -95,5 +109,7 @@ volumes:
     sail-mariadb:
         driver: local
     sail-redis:
+        driver: local
+    mailpit:
         driver: local
     
