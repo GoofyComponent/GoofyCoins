@@ -11,7 +11,7 @@ import {
 } from "chart.js";
 // import API from "services/api";
 import { Line } from "react-chartjs-2";
-import API from "@/services/api";
+import { API } from "@/services/api";
 
 ChartJS.register(
   CategoryScale,

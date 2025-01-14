@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import API from "../services/api";
+import { API } from "../services/api";
 
 const VerifyEmail = () => {
     const [message, setMessage] = useState("");
@@ -7,7 +7,7 @@ const VerifyEmail = () => {
     const verifyEmail = async () => {
         try {
             const token = window.location.pathname.split("/").pop();
-            const { data } = await API.post("/auth/verify-email", { token });
+            const { data } = await API.post("/verify-email", { token });
             setMessage(data.message);
         } catch (error) {
             setMessage("Email verification failed.");

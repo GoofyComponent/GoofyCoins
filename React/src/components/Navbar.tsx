@@ -1,13 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import API from "@/services/api";
+import { API } from "@/services/api";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
 
   const handleLogout = async () => {
-    await API.delete("/auth/logout");
+    await API.post("/logout");
     logout();
     localStorage.removeItem("token");
   };

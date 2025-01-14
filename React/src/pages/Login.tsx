@@ -1,9 +1,8 @@
 import React from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Navigate } from "react-router-dom";
+import { API, DOMAIN } from "@/services/api";
 import { LoginForm } from "@/components/login-form";
-import API from "@/services/api";
-import { GalleryVerticalEnd } from "lucide-react";
 
 const Login = () => {
   const { user, login } = useAuth();
@@ -15,34 +14,35 @@ const Login = () => {
     const password = formData.get("password") as string;
 
     try {
-      const { data } = await API.post("/auth/login", { email, password });
-      login();
-      localStorage.setItem("token", data.accessToken);
-      console.log(data);
+      // Étape 1 : Récupérer le token CSRF
+      await DOMAIN.get("/sanctum/csrf-cookie");
+
+      // Étape 2 : Envoyer les informations de login
+      const { data } = await API.post("/login", { email, password });
+
+      // Enregistrer le token dans localStorage
+      localStorage.setItem("token", data.access_token);
+      login(); // Mettre à jour l'état d'authentification
     } catch (error) {
-      console.error("Login failed");
+      console.error("Login failed", error);
     }
   };
 
   if (user) {
-    // return <Navigate to="/dashboard" />;
-    console.log("user", user);
+    return <Navigate to="/dashboard" />;
   }
 
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
+    <div className="grid min-h-screen lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="/" className="flex items-center gap-2 font-medium">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
             GoofyCoins
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            <LoginForm />
+            <LoginForm onSubmit={handleSubmit} />
           </div>
         </div>
       </div>
