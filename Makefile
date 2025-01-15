@@ -13,7 +13,7 @@ pint:
 	docker-compose exec laravel ./vendor/bin/pint
 
 fresh:
-	docker-compose exec laravel php artisan migrate:fresh
+	docker-compose exec laravel php artisan migrate:fresh --seed
 
 install-back:
 	docker-compose exec laravel composer install
