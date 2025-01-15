@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 import { API } from "@/services/api";
@@ -33,14 +33,15 @@ const items = [
   },
   {
     title: "Settings",
-    url: "settings",
+    url: "/settings",
     icon: Settings,
   },
 ];
 
 export function AppSidebar() {
   const { user } = useAuth();
-
+  const location = useLocation();
+  console.log("location", location);
   return (
     <Sidebar>
       <SidebarContent>
@@ -49,9 +50,16 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                <SidebarMenuItem key={item.title} className="rounded">
+                  <SidebarMenuButton asChild className="rounded">
+                    <a
+                      href={item.url}
+                      className={`rounded ${
+                        location.pathname === item.url
+                          ? "bg-sidebar-accent"
+                          : ""
+                      }`}
+                    >
                       <item.icon />
                       <span>{item.title}</span>
                     </a>
