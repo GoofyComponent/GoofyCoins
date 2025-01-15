@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\EtherscanService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
+use App\Services\EtherscanService;
 
 class EthStatsController extends Controller
 {
@@ -45,11 +45,13 @@ class EthStatsController extends Controller
     public function getDailyBalances(string $startDate, string $endDate): JsonResponse
     {
         try {
+            set_time_limit(300); // Temps d'exécution maximum de 5 minutes
+
             $startDate = CarbonImmutable::parse($startDate)->startOfDay();
             $endDate = CarbonImmutable::parse($endDate)->endOfDay();
-            $address = '0x53e3a3BC2762a5f683751dE3Efe1BDf9631008C4'; // Remplacez par l'adresse cible
+            $address = '0x53e3a3BC2762a5f683751dE3Efe1BDf9631008C4'; // Adresse cible
 
-            // Récupérer le solde actuel
+            // Récupérer le solde initial
             $balanceData = $this->etherscanService->getBalance($address);
             $initialBalance = $balanceData['balance'];
 
