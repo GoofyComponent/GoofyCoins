@@ -33,6 +33,9 @@ RUN apk add --no-cache \
     icu-dev \
     icu-libs
 
+# Installer BCMath
+RUN docker-php-ext-install bcmath
+
 # Créer tous les répertoires nécessaires
 RUN mkdir -p /etc/supervisor/conf.d && \
     mkdir -p /var/log/supervisor && \
