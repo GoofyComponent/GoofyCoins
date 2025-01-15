@@ -13,6 +13,7 @@ Route::prefix('eth')->group(function () {
     Route::get('/stats', [EthStatsController::class, 'getStats']);
     Route::get('/balances/{startDate}/{endDate}', [EthStatsController::class, 'getDailyBalances']);
 });
+Route::middleware(['auth:sanctum'])->post('/user/etherscan_api_key', 'UserController@store_etherscan_api_key');
 
 Route::get('/daily-price/{date}', [HistoricalPriceController::class, 'showDailyPrice']);
 
