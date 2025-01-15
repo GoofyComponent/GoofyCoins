@@ -37,6 +37,13 @@ const Login = () => {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="/" className="flex items-center gap-2 font-medium">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+              <img
+                src="/logo-goofycoins.jpg"
+                alt="GoofyCoins Logo"
+                className="rounded-xl"
+              />
+            </div>
             GoofyCoins
           </a>
         </div>

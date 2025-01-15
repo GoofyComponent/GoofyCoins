@@ -14,44 +14,75 @@ import Dashboard from "./pages/Dashboard";
 import VerifyEmail from "./pages/VerifyEmail";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "./components/AppSidebar";
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
-        <NavbarWrapper />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/verify-email/:token" element={<VerifyEmail />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+        <AppContent />
       </Router>
     </AuthProvider>
   );
 };
 
-const NavbarWrapper = () => {
+const AppContent: React.FC = () => {
   const location = useLocation();
-  const hideNavbarPaths = ["/login", "/register"];
+  const hideMarginTopPaths = new Set(["/login", "/register"]);
+  const marginTopStyle = hideMarginTopPaths.has(location.pathname)
+    ? "0px"
+    : "60px";
+  const mainHeight = hideMarginTopPaths.has(location.pathname)
+    ? "100vh"
+    : "calc(100vh - 60px)";
 
-  return !hideNavbarPaths.includes(location.pathname) ? <Navbar /> : null;
+  return (
+    <SidebarProvider>
+      <SidebarWrapper />
+      <SidebarInset>
+        <NavbarWrapper />
+        <main style={{ marginTop: marginTopStyle, height: mainHeight }}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/verify-email/:token" element={<VerifyEmail />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+};
+
+const SidebarWrapper: React.FC = () => {
+  const location = useLocation();
+  const hideNavbarPaths = new Set(["/login", "/register"]);
+
+  return !hideNavbarPaths.has(location.pathname) ? <AppSidebar /> : null;
+};
+
+const NavbarWrapper: React.FC = () => {
+  const location = useLocation();
+  const hideNavbarPaths = new Set(["/login", "/register"]);
+
+  return !hideNavbarPaths.has(location.pathname) ? <Navbar /> : null;
 };
 
 export default App;

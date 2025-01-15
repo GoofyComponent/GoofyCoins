@@ -14,7 +14,7 @@ export function RegisterForm({
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    password_confirmation: "",
   });
   const [errors, setErrors] = useState<string | null>(null);
 
@@ -26,19 +26,19 @@ export function RegisterForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.password_confirmation) {
       setErrors("Passwords do not match.");
       return;
     }
 
     try {
-      const { name, email, password, confirmPassword } = formData;
+      const { name, email, password, password_confirmation } = formData;
 
       await API.post("/register", {
         name,
         email,
         password,
-        password_confirmation: confirmPassword,
+        password_confirmation,
       });
 
       navigate("/login");
@@ -97,12 +97,12 @@ export function RegisterForm({
           />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Label htmlFor="password_confirmation">Confirm Password</Label>
           <Input
-            id="confirmPassword"
+            id="password_confirmation"
             type="password"
-            name="confirmPassword"
-            value={formData.confirmPassword}
+            name="password_confirmation"
+            value={formData.password_confirmation}
             onChange={handleChange}
             required
           />
