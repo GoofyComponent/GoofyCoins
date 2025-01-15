@@ -24,7 +24,11 @@ const Profile = () => {
               <FormItem>
                 <FormLabel>Etherscan Wallet Address</FormLabel>
                 <FormControl>
-                  <Input placeholder="Wallet Address" {...field} />
+                  <Input
+                    placeholder="Wallet Address"
+                    {...field}
+                    className="rounded"
+                  />
                 </FormControl>
                 <FormDescription>
                   This is your etherscan wallet address.
