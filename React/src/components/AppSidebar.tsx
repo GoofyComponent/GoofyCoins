@@ -19,14 +19,6 @@ import { API } from "@/services/api";
 
 import { NavUser } from "./NavUser";
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/logo-goofycoins.jpg",
-  },
-};
-
 // Menu items.
 const items = [
   {
@@ -48,6 +40,7 @@ const items = [
 
 export function AppSidebar() {
   const { user } = useAuth();
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -73,7 +66,7 @@ export function AppSidebar() {
         <div className="flex flex-col gap-4 mb-4">
           {user ? (
             <>
-              <NavUser user={data.user} />
+              <NavUser user={user} />
             </>
           ) : (
             <>
