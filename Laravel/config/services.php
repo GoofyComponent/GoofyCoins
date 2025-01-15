@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'cryptocompare' => [
+        'api_url' => env('CRYPTOCOMPARE_API_URL', 'https://min-api.cryptocompare.com/data/v2/'),
+        'api_key' => env('CRYPTOCOMPARE_API_KEY'),
+    ],
 ];

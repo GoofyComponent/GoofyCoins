@@ -3,91 +3,99 @@
 namespace App\Services;
 
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class EtherscanService
 {
     private string $apiUrl;
+
     private string $apiKey;
+
+    private CryptoCompareService $cryptoCompareService;
 
     public function __construct()
     {
         $this->apiUrl = config('services.etherscan.api_url', env('ETHERSCAN_API_URL'));
         $this->apiKey = config('services.etherscan.api_key', env('ETHERSCAN_API_KEY'));
+        $this->cryptoCompareService = new CryptoCompareService;
     }
 
     /**
      * Récupère le solde d'une adresse sur la chaîne Ethereum.
      *
-     * @param string $address
-     * @param string $tag
-     * @return array
      * @throws \Exception
      */
     public function getBalance(string $address, string $tag = 'latest'): array
     {
-        $response = Http::get($this->apiUrl, [
-            'module' => 'account',
-            'action' => 'balance',
-            'address' => $address,
-            'tag' => $tag,
-            'apikey' => $this->apiKey,
-            'chainid' => 1,
-        ]);
+        $cacheKey = "etherscan:balance:$address:$tag";
 
-        if ($response->failed()) {
-            throw new \Exception('Failed to fetch balance from Etherscan: ' . $response->body());
-        }
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($address, $tag) {
+            $response = Http::get($this->apiUrl, [
+                'module' => 'account',
+                'action' => 'balance',
+                'address' => $address,
+                'tag' => $tag,
+                'apikey' => $this->apiKey,
+                'chainid' => 1,
+            ]);
 
-        $data = $response->json();
+            if ($response->failed()) {
+                throw new \Exception('Failed to fetch balance from Etherscan: '.$response->body());
+            }
 
-        if ($data['status'] !== '1') {
-            throw new \Exception('Error from Etherscan API: ' . $data['result']);
-        }
+            $data = $response->json();
 
-        return [
-            'address' => $address,
-            'balance' => $data['result'],
-            'balance_eth' => $this->wei2eth($data['result']),
-        ];
+            if ($data['status'] !== '1') {
+                throw new \Exception('Error from Etherscan API: '.$data['result']);
+            }
+
+            return [
+                'address' => $address,
+                'balance' => $data['result'],
+                'balance_eth' => $this->wei2eth($data['result']),
+            ];
+        });
     }
 
     /**
      * Récupère le prix actuel de l'ETH.
      *
-     * @return array
      * @throws \Exception
      */
     public function getEthPrice(): array
     {
-        $response = Http::get($this->apiUrl, [
-            'module' => 'stats',
-            'action' => 'ethprice',
-            'apikey' => $this->apiKey,
-            'chainid' => 1,
-        ]);
+        $cacheKey = 'etherscan:ethprice';
 
-        if ($response->failed()) {
-            throw new \Exception('Failed to fetch ETH price: ' . $response->body());
-        }
+        return Cache::remember($cacheKey, now()->addMinutes(10), function () {
+            $response = Http::get($this->apiUrl, [
+                'module' => 'stats',
+                'action' => 'ethprice',
+                'apikey' => $this->apiKey,
+                'chainid' => 1,
+            ]);
 
-        $data = $response->json();
+            if ($response->failed()) {
+                throw new \Exception('Failed to fetch ETH price: '.$response->body());
+            }
 
-        if ($data['status'] !== '1') {
-            throw new \Exception('Error from Etherscan API: ' . $data['result']);
-        }
+            $data = $response->json();
 
-        return $data['result'];
+            if ($data['status'] !== '1') {
+                throw new \Exception('Error from Etherscan API: '.$data['result']);
+            }
+
+            return $data['result'];
+        });
     }
 
     /**
      * Récupère les transactions d'une adresse entre deux dates.
      *
-     * @param string $address
-     * @param string $startDate Format YYYY-MM-DD
-     * @param string $endDate Format YYYY-MM-DD
-     * @return array
+     * @param  string  $startDate  Format YYYY-MM-DD
+     * @param  string  $endDate  Format YYYY-MM-DD
+     *
      * @throws \Exception
      */
     public function getTransactions(string $address, CarbonImmutable $startDate, CarbonImmutable $endDate): array
@@ -116,18 +124,18 @@ class EtherscanService
                 ]);
 
                 if ($response->failed()) {
-                    throw new \Exception('Failed to fetch transactions from Etherscan: ' . $response->body());
+                    throw new \Exception('Failed to fetch transactions from Etherscan: '.$response->body());
                 }
 
                 $data = $response->json();
 
-                if (!isset($data['status']) || $data['status'] !== '1') {
+                if (! isset($data['status']) || $data['status'] !== '1') {
                     // Si le message indique "No transactions found", on arrête.
                     if (isset($data['message']) && $data['message'] === 'No transactions found') {
                         break;
                     }
 
-                    throw new \Exception('Error from Etherscan API: ' . ($data['result'] ?? 'Unknown error'));
+                    throw new \Exception('Error from Etherscan API: '.($data['result'] ?? 'Unknown error'));
                 }
 
                 foreach ($data['result'] as $tx) {
@@ -154,10 +162,7 @@ class EtherscanService
     /**
      * Regroupe les transactions par jour et calcule les soldes journaliers.
      *
-     * @param array $transactions
-     * @param float $initialBalance
-     * @param string $address
-     * @return array
+     * @param  float  $initialBalance
      */
     public function calculateDailyBalances(array $transactions, string $initialBalance, string $address): array
     {
@@ -171,7 +176,6 @@ class EtherscanService
         // Initialiser le solde courant
         $currentBalance = $initialBalance;
 
-
         // Calculer les soldes journaliers
         foreach ($transactionsByDay as $date => $txs) {
             $dailyBalance = $currentBalance;
@@ -184,13 +188,32 @@ class EtherscanService
                 }
             }
 
-            $dailyBalances[$date] = $this->wei2eth($dailyBalance);
+            $USD = $this->cryptoCompareService->getDailyHistoricalData('ETH', 'USD', $date);
+            $EUR = $this->cryptoCompareService->getDailyHistoricalData('ETH', 'EUR', $date);
+
+            $usdPrice = $USD['close'] ?? $USD['open'] ?? 0;
+            $eurPrice = $EUR['close'] ?? $EUR['open'] ?? 0;
+
+            $dailyBalances[$date] = [
+                'eth' => $this->wei2eth($dailyBalance),
+                'usd' => $this->wei2eth($dailyBalance) * $usdPrice,
+                'eur' => $this->wei2eth($dailyBalance) * $eurPrice,
+                'eth_usd_price' => $usdPrice,
+                'eth_eur_price' => $eurPrice,
+            ];
+
             $currentBalance = $dailyBalance;
         }
 
         $today = CarbonImmutable::now()->toDateString();
         if (isset($dailyBalances[$today])) {
-            $dailyBalances[$today] = $this->wei2eth($initialBalance);
+            $dailyBalances[$today] = [
+                'eth' => $this->wei2eth($initialBalance),
+                'usd' => $this->wei2eth($initialBalance) * $usdPrice,
+                'eur' => $this->wei2eth($initialBalance) * $eurPrice,
+                'eth_usd_price' => $usdPrice,
+                'eth_eur_price' => $eurPrice,
+            ];
         }
 
         return $dailyBalances;
@@ -198,6 +221,15 @@ class EtherscanService
 
     private function wei2eth($wei)
     {
-        return bcdiv($wei, 1000000000000000000, 18);
+        try {
+            // Convertir le wei en chaîne pour gérer les notations scientifiques
+            $wei = is_numeric($wei) ? sprintf('%.0f', $wei) : $wei;
+
+            return bcdiv($wei, '1000000000000000000', 18);
+        } catch (\ValueError $e) {
+            throw new \Exception('Failed to convert wei to eth: Invalid value provided - '.$wei);
+        } catch (\Exception $e) {
+            throw new \Exception('Failed to convert wei to eth: '.$e->getMessage());
+        }
     }
 }

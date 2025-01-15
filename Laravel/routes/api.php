@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\EthStatsController;
+use App\Http\Controllers\HistoricalPriceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EthStatsController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -13,4 +14,6 @@ Route::prefix('eth')->group(function () {
     Route::get('/balances/{startDate}/{endDate}', [EthStatsController::class, 'getDailyBalances']);
 });
 
-require __DIR__ . '/auth.php';
+Route::get('/daily-price/{date}', [HistoricalPriceController::class, 'showDailyPrice']);
+
+require __DIR__.'/auth.php';

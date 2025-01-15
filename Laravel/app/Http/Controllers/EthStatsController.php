@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\EtherscanService;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
-use App\Services\EtherscanService;
 
 class EthStatsController extends Controller
 {
