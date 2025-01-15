@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('etherscan_api_key')->nullable();
+            $table->string('address_wallet')->nullable();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('etherscan_api_key');
+            $table->dropColumn('address_wallet');
         });
     }
 };

@@ -47,17 +47,17 @@ class UserController extends Controller
         //
     }
 
-    public function store_etherscan_api_key(Request $request) : \Illuminate\Http\JsonResponse
+    public function store_address_wallet(Request $request) : \Illuminate\Http\JsonResponse
     {
         $user = auth()->user();
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        if (!$request->etherscan_api_key) {
-            return response()->json(['error' => 'Etherscan API key is required'], 400);
+        if (!$request->address_wallet) {
+            return response()->json(['error' => 'Etherscan API wallet is required'], 400);
         }
-        $user->etherscan_api_key = $request->etherscan_api_key;
+        $user->address_wallet = $request->address_wallet;
         $user->save();
-        return response()->json(['message' => 'Etherscan API key saved successfully'], 200);
+        return response()->json(['message' => 'Etherscan API wallet saved successfully'], 200);
     }
 }
