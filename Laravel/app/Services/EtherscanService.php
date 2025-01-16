@@ -29,7 +29,7 @@ class EtherscanService
      */
     public function getBalance(string $address, string $tag = 'latest'): array
     {
-        $cacheKey = "etherscan:balance:$address:$tag";
+        $cacheKey = "etherscan:balance:$address:$tag:$address";
 
         return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($address, $tag) {
             $response = Http::get($this->apiUrl, [
