@@ -29,11 +29,23 @@ import { API } from "@/services/api";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 
-export function NavUser({ user }: { user: { name: string; email: string } }) {
-  const { name, email } = user;
+export function NavUser({
+  user,
+}: {
+  user: { name: string; email: string; address_wallet: string };
+}) {
+  const { name, email, address_wallet } = user;
   const { logout } = useAuth();
   const { isMobile } = useSidebar();
   const [initials, setInitials] = useState("");
+
+  useEffect(() => {
+    if (address_wallet) {
+      API.post("/user/store_address_wallet", {
+        address_wallet: address_wallet,
+      });
+    }
+  }, [address_wallet]);
 
   useEffect(() => {
     if (name) {
