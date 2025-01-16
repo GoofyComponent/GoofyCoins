@@ -47,17 +47,21 @@ class UserController extends Controller
         //
     }
 
-    public function store_address_wallet(Request $request) : \Illuminate\Http\JsonResponse
+    /**
+     * Store the user's Etherscan API wallet address.
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function store_address_wallet(Request $request): \Illuminate\Http\JsonResponse
     {
+        $request->validate([
+            'address_wallet' => 'required|string',
+        ]);
+
         $user = auth()->user();
-        if (!$user) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-        if (!$request->address_wallet) {
-            return response()->json(['error' => 'Etherscan API wallet is required'], 400);
-        }
         $user->address_wallet = $request->address_wallet;
         $user->save();
+
         return response()->json(['message' => 'Etherscan API wallet saved successfully'], 200);
     }
 }

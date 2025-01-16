@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            'ensure_wallet_address' => \App\Http\Middleware\EnsureWalletAddressIsNotEmpty::class,
         ]);
 
         //

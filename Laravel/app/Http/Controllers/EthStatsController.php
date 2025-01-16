@@ -21,8 +21,9 @@ class EthStatsController extends Controller
     public function getStats(): JsonResponse
     {
         try {
+            $address = auth()->user()->address_wallet;
             $ethPriceData = $this->etherscanService->getEthPrice();
-            $balanceData = $this->etherscanService->getBalance('0x53e3a3BC2762a5f683751dE3Efe1BDf9631008C4'); // Remplacez par votre adresse
+            $balanceData = $this->etherscanService->getBalance($address); // Remplacez par votre adresse
 
             $ethPrice = (float) $ethPriceData['ethusd'];
             $balanceEth = $balanceData['balance_eth'];
@@ -41,15 +42,20 @@ class EthStatsController extends Controller
 
     /**
      * Obtenir les soldes journaliers d'une adresse entre deux dates.
+     *
+     * @param  string  $startDate  Date de début au format YYYY-MM-DD.
+     * @param  string  $endDate  Date de fin au format YYYY-MM-DD.
      */
     public function getDailyBalances(string $startDate, string $endDate): JsonResponse
     {
         try {
+
             set_time_limit(300); // Temps d'exécution maximum de 5 minutes
+
+            $address = auth()->user()->address_wallet;
 
             $startDate = CarbonImmutable::parse($startDate)->startOfDay();
             $endDate = CarbonImmutable::parse($endDate)->endOfDay();
-            $address = '0x53e3a3BC2762a5f683751dE3Efe1BDf9631008C4'; // Adresse cible
 
             // Récupérer le solde initial
             $balanceData = $this->etherscanService->getBalance($address);
