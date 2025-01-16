@@ -22,7 +22,7 @@ fatal() {
 
 # Installation des dépendances
 info "Running npm install to ensure dependencies are up-to-date..."
-npm install
+npm install --force
 
 # Démarrage du serveur de développement
 info "Starting Vite development server..."
