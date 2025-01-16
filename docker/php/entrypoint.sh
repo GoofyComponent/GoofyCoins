@@ -45,6 +45,13 @@ else
     info "Composer file not found"
 fi
 
+
+# Generate application key if not set
+if ! grep -q "APP_KEY" /var/www/html/.env; then
+    php /var/www/html/artisan key:generate
+    info "Generated application key"
+fi
+
 if [ -f /var/www/html/package.json ]; then
     info "Npm file found, installing dependencies..."
     cd /var/www/html
