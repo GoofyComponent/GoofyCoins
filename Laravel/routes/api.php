@@ -16,6 +16,8 @@ Route::prefix('eth')->group(function () {
 });
 Route::middleware(['auth:sanctum'])->post('/user/store_address_wallet', [UserController::class, 'store_address_wallet']);
 
-Route::get('/daily-price/{date}', [HistoricalPriceController::class, 'showDailyPrice']);
+Route::middleware(['auth:sanctum'])->get('/daily-price/{date}', [HistoricalPriceController::class, 'showDailyPrice']);
+
+Route::middleware(['auth:sanctum'])->get('/last-30-days-prices', [HistoricalPriceController::class, 'showLast30DaysPrices']);
 
 require __DIR__.'/auth.php';

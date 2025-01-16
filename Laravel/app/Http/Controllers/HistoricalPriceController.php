@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\CryptoCompareService;
+use Carbon\CarbonImmutable;
 
 class HistoricalPriceController extends Controller
 {
@@ -32,5 +33,31 @@ class HistoricalPriceController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Affiche les prix quotidiens pour les 30 derniers jours.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showLast30DaysPrices()
+    {
+        $today = CarbonImmutable::now();
+        $dates = $today->subDays(30)->daysUntil($today);
+
+        $prices = [];
+        foreach ($dates as $date) {
+            // GET usd and eur prices for each date
+            $usdData = $this->cryptoCompareService->getDailyHistoricalData('ETH', 'USD', $date->format('Y-m-d'));
+            $eurData = $this->cryptoCompareService->getDailyHistoricalData('ETH', 'EUR', $date->format('Y-m-d'));
+
+            $prices[] = [
+                'date' => $date->format('Y-m-d'),
+                'usd' => $usdData['close'] ?? $usdData['open'] ?? null,
+                'eur' => $eurData['close'] ?? $eurData['open'] ?? null,
+            ];
+        }
+
+        return response()->json($prices);
     }
 }
