@@ -6,6 +6,7 @@ import { Loader } from "lucide-react";
 import { API } from "@/services/api";
 import { format } from "date-fns";
 import axios from "axios";
+import { useAuth } from "@/hooks/useAuth";
 
 interface EthStats {
   ethPrice: number;
@@ -25,11 +26,16 @@ interface PriceData {
 }
 
 const Home = () => {
+  const { user } = useAuth();
   const [ethStats, setEthStats] = useState<EthStats | null>(null);
   const [ethBalances, setEthBalances] = useState<EthBalance[]>([]);
   const [priceData, setPriceData] = useState<PriceData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    console.log("user", user);
+  }, [user]);
 
   useEffect(() => {
     const fetchEthStats = async (): Promise<void> => {
