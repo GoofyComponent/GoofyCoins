@@ -23,6 +23,9 @@ const Login = () => {
       // Enregistrer le token dans localStorage
       localStorage.setItem("token", data.access_token);
       login(); // Mettre à jour l'état d'authentification
+
+      // Ajouter le cookie `isLogged`
+      document.cookie = "isLogged=true; path=/; max-age=3600;"; // Le cookie expire après 1 heure
     } catch (error) {
       console.error("Login failed", error);
     }

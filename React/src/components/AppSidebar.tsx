@@ -14,8 +14,6 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
-import { API } from "@/services/api";
-
 import { NavUser } from "./NavUser";
 
 // Menu items.
@@ -40,7 +38,6 @@ const items = [
 export function AppSidebar() {
   const { user } = useAuth();
   const location = useLocation();
-  console.log("location", location);
   return (
     <Sidebar>
       <SidebarContent>

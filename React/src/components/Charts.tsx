@@ -1,5 +1,4 @@
-import React from "react";
-
+import React, { use, useEffect, useState } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -28,10 +27,9 @@ import {
 } from "@/components/ui/card";
 
 import { addDays, format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Loader } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -39,100 +37,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-const chartData = [
-  { date: "2024-04-01", desktop: 222 },
-  { date: "2024-04-02", desktop: 97 },
-  { date: "2024-04-03", desktop: 167 },
-  { date: "2024-04-04", desktop: 242 },
-  { date: "2024-04-05", desktop: 373 },
-  { date: "2024-04-06", desktop: 301 },
-  { date: "2024-04-07", desktop: 245 },
-  { date: "2024-04-08", desktop: 409 },
-  { date: "2024-04-09", desktop: 59 },
-  { date: "2024-04-10", desktop: 261 },
-  { date: "2024-04-11", desktop: 327 },
-  { date: "2024-04-12", desktop: 292 },
-  { date: "2024-04-13", desktop: 342 },
-  { date: "2024-04-14", desktop: 137 },
-  { date: "2024-04-15", desktop: 120 },
-  { date: "2024-04-16", desktop: 138 },
-  { date: "2024-04-17", desktop: 446 },
-  { date: "2024-04-18", desktop: 364 },
-  { date: "2024-04-19", desktop: 243 },
-  { date: "2024-04-20", desktop: 89 },
-  { date: "2024-04-21", desktop: 137 },
-  { date: "2024-04-22", desktop: 224 },
-  { date: "2024-04-23", desktop: 138 },
-  { date: "2024-04-24", desktop: 387 },
-  { date: "2024-04-25", desktop: 215 },
-  { date: "2024-04-26", desktop: 75 },
-  { date: "2024-04-27", desktop: 383 },
-  { date: "2024-04-28", desktop: 122 },
-  { date: "2024-04-29", desktop: 315 },
-  { date: "2024-04-30", desktop: 454 },
-  { date: "2024-05-01", desktop: 165 },
-  { date: "2024-05-02", desktop: 293 },
-  { date: "2024-05-03", desktop: 247 },
-  { date: "2024-05-04", desktop: 385 },
-  { date: "2024-05-05", desktop: 481 },
-  { date: "2024-05-06", desktop: 498 },
-  { date: "2024-05-07", desktop: 388 },
-  { date: "2024-05-08", desktop: 149 },
-  { date: "2024-05-09", desktop: 227 },
-  { date: "2024-05-10", desktop: 293 },
-  { date: "2024-05-11", desktop: 335 },
-  { date: "2024-05-12", desktop: 197 },
-  { date: "2024-05-13", desktop: 197 },
-  { date: "2024-05-14", desktop: 448 },
-  { date: "2024-05-15", desktop: 473 },
-  { date: "2024-05-16", desktop: 338 },
-  { date: "2024-05-17", desktop: 499 },
-  { date: "2024-05-18", desktop: 315 },
-  { date: "2024-05-19", desktop: 235 },
-  { date: "2024-05-20", desktop: 177 },
-  { date: "2024-05-21", desktop: 82 },
-  { date: "2024-05-22", desktop: 81 },
-  { date: "2024-05-23", desktop: 252 },
-  { date: "2024-05-24", desktop: 294 },
-  { date: "2024-05-25", desktop: 201 },
-  { date: "2024-05-26", desktop: 213 },
-  { date: "2024-05-27", desktop: 420 },
-  { date: "2024-05-28", desktop: 233 },
-  { date: "2024-05-29", desktop: 78 },
-  { date: "2024-05-30", desktop: 340 },
-  { date: "2024-05-31", desktop: 178 },
-  { date: "2024-06-01", desktop: 178 },
-  { date: "2024-06-02", desktop: 470 },
-  { date: "2024-06-03", desktop: 103 },
-  { date: "2024-06-04", desktop: 439 },
-  { date: "2024-06-05", desktop: 88 },
-  { date: "2024-06-06", desktop: 294 },
-  { date: "2024-06-07", desktop: 323 },
-  { date: "2024-06-08", desktop: 385 },
-  { date: "2024-06-09", desktop: 438 },
-  { date: "2024-06-10", desktop: 155 },
-  { date: "2024-06-11", desktop: 92 },
-  { date: "2024-06-12", desktop: 492 },
-  { date: "2024-06-13", desktop: 81 },
-  { date: "2024-06-14", desktop: 426 },
-  { date: "2024-06-15", desktop: 307 },
-  { date: "2024-06-16", desktop: 371 },
-  { date: "2024-06-17", desktop: 475 },
-  { date: "2024-06-18", desktop: 107 },
-  { date: "2024-06-19", desktop: 341 },
-  { date: "2024-06-20", desktop: 408 },
-  { date: "2024-06-21", desktop: 169 },
-  { date: "2024-06-22", desktop: 317 },
-  { date: "2024-06-23", desktop: 480 },
-  { date: "2024-06-24", desktop: 132 },
-  { date: "2024-06-25", desktop: 141 },
-  { date: "2024-06-26", desktop: 434 },
-  { date: "2024-06-27", desktop: 448 },
-  { date: "2024-06-28", desktop: 149 },
-  { date: "2024-06-29", desktop: 103 },
-  { date: "2024-06-30", desktop: 446 },
-];
+import { API } from "@/services/api";
+import axios from "axios";
 
 const chartConfig = {
   desktop: {
@@ -148,79 +54,141 @@ export function Charts({
   height?: string;
   className?: string;
 }) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
-  });
+  const [chartData, setChartData] = useState<{ date: string; value: number }[]>(
+    []
+  );
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [timeRange, setTimeRange] = useState<string>("90d");
+  const [currency, setCurrency] = useState<string>("usd");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const today = new Date();
 
-  const [timeRange, setTimeRange] = React.useState("90d");
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item.date);
-    const referenceDate = new Date("2024-06-30");
-    let daysToSubtract = 90;
-    if (timeRange === "30d") {
-      daysToSubtract = 30;
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7;
+  const fetchChartData = async (): Promise<void> => {
+    let startDate: string;
+    let endDate: string = format(new Date(), "yyyy-MM-dd");
+
+    // Déterminer les dates de début et de fin
+    if (
+      timeRange === "dateRange" &&
+      dateRange &&
+      dateRange.from &&
+      dateRange.to
+    ) {
+      startDate = format(dateRange.from, "yyyy-MM-dd");
+      endDate = format(dateRange.to, "yyyy-MM-dd");
+    } else {
+      let daysToSubtract = 90; // Valeur par défaut
+      if (timeRange === "30d") {
+        daysToSubtract = 30;
+      } else if (timeRange === "7d") {
+        daysToSubtract = 7;
+      }
+      startDate = format(addDays(new Date(), -daysToSubtract), "yyyy-MM-dd");
     }
-    const startDate = new Date(referenceDate);
-    startDate.setDate(startDate.getDate() - daysToSubtract);
-    return date >= startDate;
-  });
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Appel à l'API via le service `API`
+      const response = await API.get<Record<string, Record<string, number>>>(
+        `/eth/balances/${startDate}/${endDate}`
+      );
+      if (response.data) {
+        const formattedData = Object.entries(response.data)
+          .map(([key, value]) => ({
+            date: key,
+            value: value[currency] || 0, // Utiliser la clé `currency` pour extraire les valeurs
+          }))
+          .reverse();
+
+        setChartData(formattedData);
+      }
+    } catch (err) {
+      console.error("Error fetching chart data:", err);
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Failed to fetch chart data.");
+      } else {
+        setError("An unknown error occurred.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchChartData();
+  }, [timeRange, currency, dateRange]);
+
+  useEffect(() => {
+    console.log("dateRange", dateRange);
+  }, [dateRange]);
+
   return (
     <Card>
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
         <div className="grid flex-1 gap-1 text-center sm:text-left">
-          <CardTitle>Area Chart - Interactive</CardTitle>
+          <CardTitle>{`Your wallet - ${currency.toUpperCase()} Data`}</CardTitle>
           <CardDescription>
-            Showing total visitors for the last 3 months
+            {`Showing ETH balances in ${currency.toUpperCase()} for the ${
+              timeRange === "select"
+                ? `selected date range`
+                : timeRange === "90d"
+                ? "last 3 months"
+                : timeRange === "30d"
+                ? "last 30 days"
+                : "last 7 days"
+            }.`}
           </CardDescription>
         </div>
-        <div className="flex flex-col-reverse  items-center gap-2 space-y-0 md:flex-row">
-          {timeRange === "select" && (
-            <div className={cn("grid gap-2", className)}>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="date"
-                    variant={"outline"}
-                    className={cn(
-                      "w-[280px] justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon />
-                    {date?.from ? (
-                      date.to ? (
-                        <>
-                          {format(date.from, "LLL dd, y")} -{" "}
-                          {format(date.to, "LLL dd, y")}
-                        </>
-                      ) : (
-                        format(date.from, "LLL dd, y")
-                      )
+        <div className="flex flex-col-reverse items-center gap-2 space-y-0 md:flex-row">
+          {/* Date Range Selector */}
+          {timeRange === "dateRange" && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="date"
+                  variant={"outline"}
+                  className="w-[280px] justify-start text-left font-normal"
+                >
+                  <CalendarIcon />
+                  {dateRange?.from ? (
+                    dateRange.to ? (
+                      <>
+                        {format(dateRange.from, "LLL dd, y")} -{" "}
+                        {format(dateRange.to, "LLL dd, y")}
+                      </>
                     ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    initialFocus
-                    mode="range"
-                    defaultMonth={date?.from}
-                    selected={date}
-                    onSelect={setDate}
-                    numberOfMonths={2}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+                      format(dateRange.from, "LLL dd, y")
+                    )
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={dateRange?.from}
+                  selected={dateRange}
+                  onSelect={setDateRange as any}
+                  numberOfMonths={2}
+                  toDate={today}
+                  disabled={(date) =>
+                    date > new Date() || date < new Date("1900-01-01")
+                  }
+                />
+              </PopoverContent>
+            </Popover>
           )}
+
+          {/* Select for Time Range */}
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger
               className="w-[200px] rounded-lg sm:ml-auto"
-              aria-label="Select a value"
+              aria-label="Select a time range"
             >
               <SelectValue placeholder="Last 3 months" />
             </SelectTrigger>
@@ -234,92 +202,97 @@ export function Charts({
               <SelectItem value="7d" className="rounded-lg">
                 Last 7 days
               </SelectItem>
-              <SelectItem value="select" className="rounded-lg">
+              <SelectItem value="dateRange" className="rounded-lg">
                 Select a date range
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Select for Currency */}
+          <Select value={currency} onValueChange={setCurrency}>
+            <SelectTrigger
+              className="w-[200px] rounded-lg"
+              aria-label="Select a currency"
+            >
+              <SelectValue placeholder="Currency" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="usd" className="rounded-lg">
+                USD
+              </SelectItem>
+              <SelectItem value="eur" className="rounded-lg">
+                EUR
+              </SelectItem>
+              <SelectItem value="eth" className="rounded-lg">
+                ETH
               </SelectItem>
             </SelectContent>
           </Select>
         </div>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto w-full"
-          style={{ height }}
-        >
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-desktop)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                });
-              }}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    });
-                  }}
-                  indicator="dot"
-                />
-              }
-            />
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
-              stackId="a"
-            />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="url(#fillDesktop)"
-              stroke="var(--color-desktop)"
-              stackId="a"
-            />
-            <ChartLegend content={<ChartLegendContent />} />
-          </AreaChart>
-        </ChartContainer>
+        {loading && (
+          <div
+            className="flex justify-center items-center w-full"
+            style={{ height }}
+          >
+            <Loader className="w-8 h-8 animate-spin opacity-30" />
+          </div>
+        )}
+        {error && <p className="text-red-500">Error: {error}</p>}
+        {!loading && !error && (
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto w-full"
+            style={{ height }}
+          >
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-desktop)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-desktop)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={8}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    labelFormatter={(value) => {
+                      return new Date(value).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      });
+                    }}
+                    indicator="dot"
+                  />
+                }
+              />
+              <Area
+                dataKey="value"
+                type="natural"
+                fill="url(#fillDesktop)"
+                stroke="var(--color-desktop)"
+                stackId="a"
+              />
+            </AreaChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   );

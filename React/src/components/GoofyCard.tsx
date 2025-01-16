@@ -24,7 +24,7 @@ const CardDashboard: React.FC = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex justify-center items-center">
-        <button className="bg-primary text-white rounded-lg px-4 py-2 font-bold hover:scale-110 transition-all">
+        <button className="bg-primary text-background rounded-lg px-4 py-2 font-bold hover:scale-110 transition-all">
           <a
             href="https://github.com/GoofyComponent"
             target="_blank"

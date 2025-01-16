@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./components/AppSidebar";
 import NotLogged from "./components/NotLoged";
+import NoAddressWallet from "./components/NoAdressWallet";
 
 const App: React.FC = () => {
   return (
@@ -53,15 +54,6 @@ const AppContent: React.FC = () => {
               <Route path="*" element={<NotLogged />} />
             ) : (
               <>
-                <Route path="/" element={<Home />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
                 <Route
                   path="/settings"
                   element={
@@ -70,6 +62,21 @@ const AppContent: React.FC = () => {
                     </ProtectedRoute>
                   }
                 />
+                {!user.address_wallet ? (
+                  <Route path="*" element={<NoAddressWallet />} />
+                ) : (
+                  <>
+                    <Route path="/" element={<Home />} />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                  </>
+                )}
               </>
             )}
           </Routes>
