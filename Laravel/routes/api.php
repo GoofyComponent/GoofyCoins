@@ -14,6 +14,8 @@ Route::prefix('eth')->group(function () {
     Route::get('/balances/{startDate}/{endDate}', [EthStatsController::class, 'getDailyBalances']);
 });
 
-Route::get('/daily-price/{date}', [HistoricalPriceController::class, 'showDailyPrice']);
+Route::middleware(['auth:sanctum'])->get('/daily-price/{date}', [HistoricalPriceController::class, 'showDailyPrice']);
+
+Route::middleware(['auth:sanctum'])->get('/last-30-days-prices', [HistoricalPriceController::class, 'showLast30DaysPrices']);
 
 require __DIR__.'/auth.php';
