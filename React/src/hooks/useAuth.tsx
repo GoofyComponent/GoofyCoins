@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { API } from "@/services/api";
 
 interface AuthContextType {
@@ -11,6 +17,7 @@ interface AuthContextType {
 interface User {
   email: string;
   name: string;
+  address_wallet: string;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
 import {
   FormControl,
@@ -17,6 +18,7 @@ interface IFormInput {
 
 const Profile = () => {
   const form = useForm<IFormInput>();
+  const [validSubmit, setValidSubmit] = useState(false);
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     console.log(data);
@@ -24,10 +26,10 @@ const Profile = () => {
       const response = await API.post("/user/store_address_wallet", {
         address_wallet: data.address_wallet,
       });
-
+      setValidSubmit(true);
       console.log(response.data.message);
-      alert("Etherscan API wallet saved successfully!");
     } catch (error) {
+      setValidSubmit(false);
       console.error("An error occurred while saving the wallet.");
     }
   };
@@ -49,9 +51,11 @@ const Profile = () => {
                     className="rounded"
                   />
                 </FormControl>
-                <FormDescription>
-                  This is your etherscan wallet address.
-                </FormDescription>
+                {validSubmit && (
+                  <FormDescription>
+                    Your wallet address has been saved.
+                  </FormDescription>
+                )}
                 <FormMessage />
               </FormItem>
             )}

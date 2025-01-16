@@ -19,7 +19,7 @@ install-back:
 	docker-compose exec laravel composer install
 
 install-front:
-	docker-compose exec react npm install
+	docker-compose exec react npm install --force
 
 install: install-back install-front
 
