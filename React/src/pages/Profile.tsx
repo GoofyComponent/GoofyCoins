@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { API } from "@/services/api";
 
 interface IFormInput {
-  username: string;
+  address_wallet: string;
 }
 
 const Profile = () => {
@@ -22,7 +22,7 @@ const Profile = () => {
     console.log(data);
     try {
       const response = await API.post("/user/store_address_wallet", {
-        address_wallet: data.username,
+        address_wallet: data.address_wallet,
       });
 
       console.log(response.data.message);
@@ -38,7 +38,7 @@ const Profile = () => {
         <form className="space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
-            name="username"
+            name="address_wallet"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Etherscan Wallet Address</FormLabel>
