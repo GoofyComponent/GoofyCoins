@@ -9,7 +9,7 @@ import { API } from "@/services/api";
 
 interface AuthContextType {
   user: User | null;
-  login: () => void;
+  login: (token: string) => void;
   logout: () => void;
   getUser: () => User | null; // Nouvelle méthode
 }
@@ -26,29 +26,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const cookies = document.cookie.split(";");
+    // Trouver le cookie `auth_token`
+    const tokenCookie = cookies.find((cookie) =>
+      cookie.trim().startsWith("auth_token=")
+    );
+
+    // Extraire la valeur du cookie si trouvé
+    const token = tokenCookie ? tokenCookie.split("=")[1] : null;
+
     if (token) {
-      API.get("/user")
+      API.get("/user", { headers: { Authorization: `Bearer ${token}` } })
         .then((response) => setUser(response.data))
-        .catch(() => {
-          localStorage.removeItem("token");
-        });
+        .catch(() => {});
     }
   }, []);
 
-  const login = () => {
+  const login = (token: string) => {
     API.get("/user")
       .then((response) => {
         setUser(response.data);
+        // on mets dans le cookie le token
+        document.cookie = `auth_token=${token}; path=/;`;
       })
-      .catch(() => {
-        localStorage.removeItem("token");
-      });
+      .catch(() => {});
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("token");
+    document.cookie =
+      "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   };
 
   const getUser = () => user; // Nouvelle fonction pour obtenir l'utilisateur

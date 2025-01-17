@@ -20,9 +20,7 @@ const Login = () => {
       // Étape 2 : Envoyer les informations de login
       const { data } = await API.post("/login", { email, password });
 
-      // Enregistrer le token dans localStorage
-      localStorage.setItem("token", data.access_token);
-      login(); // Mettre à jour l'état d'authentification
+      login(data.access_token);
 
       // Ajouter le cookie `isLogged`
       document.cookie = "isLogged=true; path=/; max-age=3600;"; // Le cookie expire après 1 heure
