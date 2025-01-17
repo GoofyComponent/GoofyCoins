@@ -34,9 +34,32 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update_username(Request $request) : \Illuminate\Http\JsonResponse
     {
-        //
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        if (!$request->name) {
+            return response()->json(['error' => 'Username is required'], 400);
+        }
+        $user->name = $request->name;
+        $user->save();
+        return response()->json(['message' => 'Username updated successfully'], 200);
+    }
+
+    public function update_email(Request $request) : \Illuminate\Http\JsonResponse
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        if (!$request->email) {
+            return response()->json(['error' => 'Email is required'], 400);
+        }
+        $user->email = $request->email;
+        $user->save();
+        return response()->json(['message' => 'Email updated successfully'], 200);
     }
 
     /**

@@ -13,7 +13,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import VerifyEmail from "./pages/VerifyEmail";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./components/AppSidebar";
 import NotLogged from "./components/NotLoged";
@@ -58,7 +58,7 @@ const AppContent: React.FC = () => {
                   path="/settings"
                   element={
                     <ProtectedRoute>
-                      <Profile />
+                      <Settings />
                     </ProtectedRoute>
                   }
                 />

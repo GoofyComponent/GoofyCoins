@@ -15,7 +15,9 @@ Route::prefix('eth')->middleware(['auth:sanctum', 'ensure_wallet_address'])->gro
     Route::get('/balances/{startDate}/{endDate}', [EthStatsController::class, 'getDailyBalances']);
 });
 
+Route::middleware(['auth:sanctum'])->post('/user/update_username', [UserController::class, 'update_username']);
 Route::middleware(['auth:sanctum'])->post('/user/store_address_wallet', [UserController::class, 'store_address_wallet']);
+Route::middleware(['auth:sanctum'])->post('/user/update_email', [UserController::class, 'update_email']);
 
 Route::middleware(['auth:sanctum'])->get('/daily-price/{date}', [HistoricalPriceController::class, 'showDailyPrice']);
 
