@@ -15,6 +15,7 @@ interface AuthContextType {
 }
 
 interface User {
+  email_verified_at: any;
   email: string;
   name: string;
   address_wallet: string;
