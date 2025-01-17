@@ -4,47 +4,64 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function update_username(Request $request) : \Illuminate\Http\JsonResponse
     {
-        //
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        if (!$request->name) {
+            return response()->json(['error' => 'Username is required'], 400);
+        }
+        $user->name = $request->name;
+        $user->save();
+        return response()->json(['message' => 'Username updated successfully'], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function update_email(Request $request) : \Illuminate\Http\JsonResponse
     {
-        //
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        if (!$request->email) {
+            return response()->json(['error' => 'Email is required'], 400);
+        }
+        $user->email = $request->email;
+        $user->save();
+        return response()->json(['message' => 'Email updated successfully'], 200);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
+    public function update_password(Request $request) : \Illuminate\Http\JsonResponse
     {
-        //
-    }
+        $request->validate([
+            'old_password' => ['required', 'string'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password_confirmation' => ['required', 'string'],
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
+        if ($request->password !== $request->password_confirmation) {
+            return response()->json(['error' => 'Password and confirm password do not match'], 400);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        if (!Hash::check($request->old_password, $user->password)) {
+            return response()->json(['error' => 'Old password is incorrect'], 400);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+        return response()->json(['message' => 'Password updated successfully'], 200);
     }
 
     /**

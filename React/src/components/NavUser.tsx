@@ -7,13 +7,13 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
+  UserRound,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -28,6 +28,7 @@ import {
 import { API } from "@/services/api";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export function NavUser({
   user,
@@ -104,6 +105,13 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <Link to="/profile">
+              <DropdownMenuItem>
+                <UserRound />
+                Profile
+              </DropdownMenuItem>
+            </Link>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut />

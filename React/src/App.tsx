@@ -13,17 +13,20 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import VerifyEmail from "./pages/VerifyEmail";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./components/AppSidebar";
 import NotLogged from "./components/NotLoged";
 import NoAddressWallet from "./components/NoAdressWallet";
+import { Toaster } from "@/components/ui/toaster";
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
         <AppContent />
+        <Toaster />
       </Router>
     </AuthProvider>
   );
@@ -58,7 +61,7 @@ const AppContent: React.FC = () => {
                   path="/settings"
                   element={
                     <ProtectedRoute>
-                      <Profile />
+                      <Settings />
                     </ProtectedRoute>
                   }
                 />
@@ -77,6 +80,14 @@ const AppContent: React.FC = () => {
                     />
                   </>
                 )}
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
               </>
             )}
           </Routes>
