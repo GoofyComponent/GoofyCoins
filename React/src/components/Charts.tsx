@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/popover";
 import { API } from "@/services/api";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const chartConfig = {
   desktop: {
@@ -50,9 +51,11 @@ const chartConfig = {
 export function Charts({
   height = "70vh",
   className,
+  hideControl = false,
 }: {
   height?: string;
   className?: string;
+  hideControl?: boolean;
 }) {
   const [chartData, setChartData] = useState<{ date: string; value: number }[]>(
     []
@@ -142,93 +145,99 @@ export function Charts({
             }.`}
           </CardDescription>
         </div>
-        <div className="flex flex-col-reverse items-center gap-2 space-y-0 md:flex-row">
-          {/* Date Range Selector */}
-          {timeRange === "dateRange" && (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant={"outline"}
-                  className="w-[280px] justify-start text-left font-normal"
-                >
-                  <CalendarIcon />
-                  {dateRange?.from ? (
-                    dateRange.to ? (
-                      <>
-                        {format(dateRange.from, "LLL dd, y")} -{" "}
-                        {format(dateRange.to, "LLL dd, y")}
-                      </>
+        {hideControl ? (
+          <Link to="/dashboard" className="ml-auto">
+            <Button className="w-full rounded">More control</Button>
+          </Link>
+        ) : (
+          <div className="flex flex-col-reverse items-center gap-2 space-y-0 md:flex-row">
+            {/* Date Range Selector */}
+            {timeRange === "dateRange" && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="date"
+                    variant={"outline"}
+                    className="w-[280px] justify-start text-left font-normal"
+                  >
+                    <CalendarIcon />
+                    {dateRange?.from ? (
+                      dateRange.to ? (
+                        <>
+                          {format(dateRange.from, "LLL dd, y")} -{" "}
+                          {format(dateRange.to, "LLL dd, y")}
+                        </>
+                      ) : (
+                        format(dateRange.from, "LLL dd, y")
+                      )
                     ) : (
-                      format(dateRange.from, "LLL dd, y")
-                    )
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={dateRange?.from}
-                  selected={dateRange}
-                  onSelect={setDateRange as any}
-                  numberOfMonths={2}
-                  toDate={today}
-                  disabled={(date) =>
-                    date > new Date() || date < new Date("1900-01-01")
-                  }
-                />
-              </PopoverContent>
-            </Popover>
-          )}
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    initialFocus
+                    mode="range"
+                    defaultMonth={dateRange?.from}
+                    selected={dateRange}
+                    onSelect={setDateRange as any}
+                    numberOfMonths={2}
+                    toDate={today}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
 
-          {/* Select for Time Range */}
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger
-              className="w-[200px] rounded-lg sm:ml-auto"
-              aria-label="Select a time range"
-            >
-              <SelectValue placeholder="Last 3 months" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="90d" className="rounded-lg">
-                Last 3 months
-              </SelectItem>
-              <SelectItem value="30d" className="rounded-lg">
-                Last 30 days
-              </SelectItem>
-              <SelectItem value="7d" className="rounded-lg">
-                Last 7 days
-              </SelectItem>
-              <SelectItem value="dateRange" className="rounded-lg">
-                Select a date range
-              </SelectItem>
-            </SelectContent>
-          </Select>
+            {/* Select for Time Range */}
+            <Select value={timeRange} onValueChange={setTimeRange}>
+              <SelectTrigger
+                className="w-[200px] rounded-lg sm:ml-auto"
+                aria-label="Select a time range"
+              >
+                <SelectValue placeholder="Last 3 months" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="90d" className="rounded-lg">
+                  Last 3 months
+                </SelectItem>
+                <SelectItem value="30d" className="rounded-lg">
+                  Last 30 days
+                </SelectItem>
+                <SelectItem value="7d" className="rounded-lg">
+                  Last 7 days
+                </SelectItem>
+                <SelectItem value="dateRange" className="rounded-lg">
+                  Select a date range
+                </SelectItem>
+              </SelectContent>
+            </Select>
 
-          {/* Select for Currency */}
-          <Select value={currency} onValueChange={setCurrency}>
-            <SelectTrigger
-              className="w-[200px] rounded-lg"
-              aria-label="Select a currency"
-            >
-              <SelectValue placeholder="Currency" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="usd" className="rounded-lg">
-                USD
-              </SelectItem>
-              <SelectItem value="eur" className="rounded-lg">
-                EUR
-              </SelectItem>
-              <SelectItem value="eth" className="rounded-lg">
-                ETH
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+            {/* Select for Currency */}
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger
+                className="w-[200px] rounded-lg"
+                aria-label="Select a currency"
+              >
+                <SelectValue placeholder="Currency" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="usd" className="rounded-lg">
+                  USD
+                </SelectItem>
+                <SelectItem value="eur" className="rounded-lg">
+                  EUR
+                </SelectItem>
+                <SelectItem value="eth" className="rounded-lg">
+                  ETH
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         {loading && (

@@ -156,7 +156,7 @@ const Home = () => {
 
   return (
     <div className="pt-0 p-4 flex flex-col gap-4 h-full">
-      <Charts height="30vh" />
+      <Charts height="30vh" hideControl={true} />
       <div className="flex flex-col md:flex-row justify-between gap-4 h-full">
         {ethStats && (
           <>
