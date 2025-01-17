@@ -16,46 +16,68 @@ Cette application est une solution web construite avec Laravel pour le backend e
 ## Installation
 
 ### 1. Cloner le dépôt
+
 ```bash
 git clone https://github.com/GoofyComponent/GoofyCoins
 cd GoofyCoins
 ```
 
 ### 2. Lancer l'application
+
 Démarrez l'environnement Docker avec :
+
 ```bash
 make up
 ```
 
+Renseignez les informations d'api dans le .env
+
+```bash
+CRYPTOCOMPARE_API_KEY = "votre clé d'api"
+ETHERSCAN_API_KEY = "votre clé d'api"
+```
+
 ### 3. Installer les dépendances
+
 Installez les dépendances backend et frontend :
+
 ```bash
 make install
 ```
 
 ### 4. Configurer la base de données
+
 Appliquez les migrations et les seeders :
+
 ```bash
 make fresh
 ```
 
----
+### 5. Accéder à l'application
+
+## http://localhost:3000
+
+## Une integration du refresh token a été faite mais pas finalisé dans cette branche : refresh-token
 
 ## Commandes Makefile
 
 ### Lancer et arrêter les services
+
 - **`make up`** : Lance les containers Docker
 - **`make down`** : Arrête et supprime les containers Docker
 
 ### Gestion des services
+
 - **`make exec`** : Accède au container Laravel via bash
 
 ### Gestion des dépendances
+
 - **`make install-back`** : Installe les dépendances backend via Composer
 - **`make install-front`** : Installe les dépendances frontend via npm
 - **`make install`** : Exécute `make install-back` et `make install-front`
 
 ### Maintenance et tests
+
 - **`make pint`** : Lint le code backend avec Pint
 - **`make fresh`** : Réinitialise la base de données avec les migrations et seeders
 - **`make clear`** : Vide le cache de configuration Laravel
@@ -84,6 +106,7 @@ make fresh
 ## Tests
 
 Pour exécuter les tests unitaires et d’intégration :
+
 ```bash
 make test
 ```
@@ -93,4 +116,3 @@ make test
 ## Licence
 
 Ce projet est sous licence MIT. Consultez le fichier `LICENSE` pour plus d'informations.
-
