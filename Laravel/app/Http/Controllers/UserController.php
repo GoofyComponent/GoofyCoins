@@ -4,36 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update_username(Request $request) : \Illuminate\Http\JsonResponse
     {
         $user = auth()->user();
@@ -62,12 +37,31 @@ class UserController extends Controller
         return response()->json(['message' => 'Email updated successfully'], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
+    public function update_password(Request $request) : \Illuminate\Http\JsonResponse
     {
-        //
+        $request->validate([
+            'old_password' => ['required', 'string'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password_confirmation' => ['required', 'string'],
+        ]);
+
+        if ($request->password !== $request->password_confirmation) {
+            return response()->json(['error' => 'Password and confirm password do not match'], 400);
+        }
+
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        if (!Hash::check($request->old_password, $user->password)) {
+            return response()->json(['error' => 'Old password is incorrect'], 400);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+        return response()->json(['message' => 'Password updated successfully'], 200);
     }
 
     /**
