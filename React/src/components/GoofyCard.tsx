@@ -20,7 +20,7 @@ const CardDashboard: React.FC = () => {
           />
         </CardTitle>
         <CardDescription className="text-base text-center">
-          Made with ♥️ by the GoofyTeam
+          Made with 💜 by the GoofyTeam
         </CardDescription>
       </CardHeader>
       <CardContent className="flex justify-center items-center">
