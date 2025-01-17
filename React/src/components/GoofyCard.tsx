@@ -16,11 +16,11 @@ const CardDashboard: React.FC = () => {
           <img
             src="/logo-goofycoins.jpg"
             alt="GoofyCoins Logo"
-            className="h-24 w-24 rounded-full"
+            className="mt-5 h-24 w-24 rounded-full"
           />
         </CardTitle>
         <CardDescription className="text-base text-center">
-          made with love by the GoofyTeam
+          Made with ♥️ by the GoofyTeam
         </CardDescription>
       </CardHeader>
       <CardContent className="flex justify-center items-center">
